@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  plex_poster_updater:
+    container_name: plex_poster_updater
+    image: plex_poster_updater:latest
+    build: .
+    restart: unless-stopped
+

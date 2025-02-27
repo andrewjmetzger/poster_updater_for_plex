@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plex Poster Updater</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .progress-counter { font-size: 14px; font-weight: bold; position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        img { width: 100px; height: auto; }
+    </style>
+</head>
+<body>
+    <h1>Plex Poster Updater</h1>
+    
+    <!-- Progress Counter -->
+    <div id="progressCounter" class="progress-counter">Ready</div>
+
+    <!-- Search by Movie Name -->
+    <label for="movie_search">Search by Movie Name:</label>
+    <input type="text" id="movie_search">
+    <button onclick="searchMovie()">Search</button>
+
+    <br><br>
+
+    <!-- Search by Time Range -->
+    <label for="time_range">Select Time Range:</label>
+    <select id="time_range">
+        <option value="1 week">1 Week</option>
+        <option value="2 weeks">2 Weeks</option>
+        <option value="1 month">1 Month</option>
+        <option value="all">All</option>
+    </select>
+    <button onclick="fetchPosters()">Search</button>
+
+    <!-- Movie Table -->
+    <table id="movies-table">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Title (Year)</th>
+                <th>Current Poster (Plex)</th>
+                <th>New Poster (TMDb)</th>
+            </tr>
+        </thead>
+        <tbody id="movies-container">
+        </tbody>
+    </table>
+
+    <button id="applyChangesButton">Apply Changes</button>
+    <div id="result"></div>
+
+    <script>
+        function updateProgress(current, total) {
+            document.getElementById("progressCounter").innerText = `Processing: ${current}/${total}`;
+        }
+
+        function fetchPosters() {
+            let timeRange = document.getElementById("time_range").value;
+            document.getElementById("progressCounter").innerText = "Searching...";
+            
+            fetch("/fetch-posters", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ time_range: timeRange })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let container = document.getElementById("movies-container");
+                container.innerHTML = ""; // Clear previous results
+                let total = data.total;
+
+                data.movies.forEach((movie, index) => {
+                    updateProgress(index + 1, total);
+
+                    let row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td><input type="checkbox" data-movie-id="${movie.ratingKey}" data-new-poster="${movie.tmdb_poster}"></td>
+                        <td>${movie.title} (${movie.year})</td>
+                        <td><img src="${movie.plex_poster}" alt="Plex Poster"></td>
+                        <td><img src="${movie.tmdb_poster}" alt="TMDb Poster"></td>
+                    `;
+                    container.appendChild(row);
+                });
+            });
+        }
+
+        function searchMovie() {
+            let query = document.getElementById("movie_search").value;
+            document.getElementById("progressCounter").innerText = "Searching...";
+            
+            fetch("/search-movie", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let container = document.getElementById("movies-container");
+                container.innerHTML = "";
+                let total = data.total;
+
+                data.movies.forEach((movie, index) => {
+                    updateProgress(index + 1, total);
+
+                    let row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td><input type="checkbox" data-movie-id="${movie.ratingKey}" data-new-poster="${movie.tmdb_poster}"></td>
+                        <td>${movie.title} (${movie.year})</td>
+                        <td><img src="${movie.plex_poster}" alt="Plex Poster"></td>
+                        <td><img src="${movie.tmdb_poster}" alt="TMDb Poster"></td>
+                    `;
+                    container.appendChild(row);
+                });
+            });
+        }
+
+        document.getElementById("applyChangesButton").addEventListener("click", function () {
+            let selectedMovies = [];
+
+            document.querySelectorAll("input[type=checkbox]:checked").forEach(checkbox => {
+                let movieId = checkbox.getAttribute("data-movie-id");
+                let newPosterUrl = checkbox.getAttribute("data-new-poster");
+
+                selectedMovies.push([movieId, newPosterUrl]);
+            });
+
+            fetch("/apply-changes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ selected_movies: selectedMovies })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML = data.messages.join("<br>");
+            });
+        });
+    </script>
+</body>
+</html>
+</th>
+            </tr>
+        </thead>
+     
+
+    </script>
+</body>
+</html>
+ 
+    </script>
+</body>
+</html>
+
+    </script>
+</body>
+</html>
+
+    </script>
+</body>
+</html>
+ 
+    </script>
+</body>
+</html>
+
+    </script>
+</body>
+</html>
+
