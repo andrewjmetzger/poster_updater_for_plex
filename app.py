@@ -21,6 +21,7 @@ def load_config():
     plex_token = os.getenv("PLEX_TOKEN")
     tmdb_api_key = os.getenv("TMDB_API_KEY")
     library_name = os.getenv("PLEX_LIBRARY", "Movies")
+    web_port = os.getenv("WEB_PORT", "5000")
 
     if not plex_url or not plex_token or not tmdb_api_key:
         raise ValueError("Missing required environment variables (PLEX_URL, PLEX_TOKEN, TMDB_API_KEY)")
@@ -29,7 +30,8 @@ def load_config():
         "plex_url": plex_url,
         "plex_token": plex_token,
         "tmdb_api_key": tmdb_api_key,
-        "library_name": library_name
+        "library_name": library_name,
+        "web_port": web-port
     }
 
 # Fetch TMDb poster
