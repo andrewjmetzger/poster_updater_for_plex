@@ -17,11 +17,15 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %
 app = Flask(__name__)
 # Load configuration settings
 def load_config():
-    plex_url = os.getenv("PLEX_URL")
-    plex_token = os.getenv("PLEX_TOKEN")
-    tmdb_api_key = os.getenv("TMDB_API_KEY")
-    library_name = os.getenv("PLEX_LIBRARY", "Movies")
-    web_port = os.getenv("WEB_PORT", "5000")
+    plex_url = os.getenv("PLEX_URL", "").strip()
+    plex_token = os.getenv("PLEX_TOKEN", "").strip()
+    tmdb_api_key = os.getenv("TMDB_API_KEY", "").strip()
+    library_name = os.getenv("PLEX_LIBRARY", "Movies").strip()
+    web_port = os.getenv("WEB_PORT", "5000").strip()
+
+    # Ensure PLEX_URL starts with "http://"
+    if plex_url and not plex_url.startswith("http"):
+        plex_url = f"http://{plex_url}"
 
     if not plex_url or not plex_token or not tmdb_api_key:
         raise ValueError("Missing required environment variables (PLEX_URL, PLEX_TOKEN, TMDB_API_KEY)")
@@ -31,7 +35,7 @@ def load_config():
         "plex_token": plex_token,
         "tmdb_api_key": tmdb_api_key,
         "library_name": library_name,
-        "web_port": web-port
+        "web_port": web_port
     }
 
 # Fetch TMDb poster
