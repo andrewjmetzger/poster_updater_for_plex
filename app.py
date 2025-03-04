@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-AAAAAA
 # -*- coding: utf-8 -*-
 import os
 import json
@@ -79,7 +78,7 @@ def fetch_posters():
         return jsonify({"error": "Plex URL or Token missing from config"}), 500
 
     try:
-        debug_log(f"Connecting to Plex at: {plex_url} with the following plex token: {plex_token}")
+        debug_log(f"Connecting to Plex at: {plex_url} with token: {plex_token}")
         plex = PlexServer(plex_url, plex_token)
     except Exception as e:
         logging.error(f"❌ Error connecting to Plex: {e}")
@@ -114,6 +113,38 @@ def fetch_posters():
         debug_log(f"Processing {index}/{len(filtered_movies)}: {movie.title}")
 
     return jsonify({"movies": movies, "total": len(filtered_movies)})
+
+# ✅ Search movies by name
+@app.route("/search-movie", methods=["POST"])
+def search_movie():
+    """Search for a movie by name in Plex."""
+    search_query = request.json.get("query", "").strip().lower()
+    debug_log(f"Searching for movie: {search_query}")
+
+    plex_url = config.get("plex_url", "").strip()
+    plex_token = config.get("plex_token", "").strip()
+
+    # ✅ Ensure Plex URL starts with "http://"
+    if plex_url and not plex_url.startswith("http"):
+        plex_url = f"http://{plex_url}"
+
+    plex = PlexServer(plex_url, plex_token)
+    library = plex.library.section(config["library_name"])
+
+    matching_movies = library.search(search_query)
+
+    # ✅ Sort search results by `addedAt` (newest first)
+    matching_movies.sort(key=lambda x: x.addedAt, reverse=True)
+
+    movies = [{
+        "title": movie.title,
+        "year": movie.year,
+        "plex_poster": movie.posterUrl,
+        "tmdb_poster": get_tmdb_poster(movie.title, movie.year),
+        "ratingKey": movie.ratingKey
+    } for movie in matching_movies]
+
+    return jsonify({"movies": movies, "total": len(matching_movies)})
 
 # ✅ Apply changes (update posters)
 @app.route("/apply-changes", methods=["POST"])
@@ -159,4 +190,14 @@ def apply_changes():
             logging.error(error_msg)
 
     return jsonify({"messages": response_messages})
+
+# ✅ Web UI route
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+# ✅ Start the Flask app
+if __name__ == "__main__":
+    debug_log("Starting Flask server")
+    app.run(host="0.0.0.0", port=int(config["web_port"]), debug=config["debug_mode"], threaded=True)
 
