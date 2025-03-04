@@ -75,7 +75,8 @@ def fetch_posters():
 
     try:
         debug_log(f"Connecting to Plex at: {plex_url} with the following plex token: {plex_token}")
-        plex = PlexServer(config["plex_url"], config["plex_token"])
+        #plex = PlexServer(config["plex_url"], config["plex_token"])
+        plex = PlexServer(config.get("plex_url"), config.get("plex_token"))
     except Exception as e:
         logging.error(f"❌ Error connecting to Plex: {e}")
         return jsonify({"error": f"Failed to connect to Plex: {e}"}), 500
