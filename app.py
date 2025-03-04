@@ -63,6 +63,7 @@ def get_tmdb_poster(title, year):
 @app.route("/fetch-posters", methods=["POST"])
 def fetch_posters():
     """Fetch movies based on time range selection."""
+   
     debug_log("Starting step: Fetching posters from Plex")
 
     plex_url = config.get("plex_url", "").strip()
@@ -74,7 +75,7 @@ def fetch_posters():
 
     try:
         debug_log(f"Connecting to Plex at: {plex_url}")
-        plex = PlexServer(plex_url, plex_token)
+        plex = PlexServer(config["plex_url"], config["plex_token"])
     except Exception as e:
         logging.error(f"❌ Error connecting to Plex: {e}")
         return jsonify({"error": f"Failed to connect to Plex: {e}"}), 500
