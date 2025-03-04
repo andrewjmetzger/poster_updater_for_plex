@@ -53,10 +53,21 @@ def debug_log(message):
 # ✅ Fetch TMDb poster
 def get_tmdb_poster(title, year):
     """Fetch TMDb poster URL based on movie title & year."""
-    search_url = f"https://api.themoviedb.org/3/search/movie?api_key={config['tmdb_api_key']}&query={title}&year={year}"
-    response = requests.get(search_url).json()
-    if response.get("results"):
-        return f"https://image.tmdb.org/t/p/w500{response['results'][0].get('poster_path')}"
+    api_key = config['tmdb_api_key']
+    search_url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={title}&year={year}"
+
+    logging.debug(f"🔍 Fetching TMDb Poster: {search_url}")
+
+    response = requests.get(search_url)
+    logging.debug(f"📝 TMDb Response Status Code: {response.status_code}")
+    logging.debug(f"📝 TMDb Response Body: {response.text}")
+
+    if response.status_code == 401:
+        logging.error("❌ TMDb API Key Unauthorized! Check API key settings.")
+
+    if response.ok and response.json().get("results"):
+        return f"https://image.tmdb.org/t/p/w500{response.json()['results'][0].get('poster_path')}"
+
     return None
 
 # ✅ Fetch movies dynamically based on user selection
