@@ -74,7 +74,7 @@ def fetch_posters():
         return jsonify({"error": "Plex URL or Token missing from config"}), 500
 
     try:
-        debug_log(f"Connecting to Plex at: {plex_url}")
+        debug_log(f"Connecting to Plex at: {plex_url} with the following plex token: {plex_token}")
         plex = PlexServer(config["plex_url"], config["plex_token"])
     except Exception as e:
         logging.error(f"❌ Error connecting to Plex: {e}")
