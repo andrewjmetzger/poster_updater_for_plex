@@ -52,7 +52,13 @@ def get_tmdb_poster(title, year, api_key):
 def fetch_posters():
     """Fetch movies based on time range selection."""
     config = load_config()
-    plex = PlexServer(config["plex_url"], config["plex_token"])
+    print(f"🔍 Connecting to Plex Server: {config['plex_url']}")
+    print(f"🔑 Using Token: {config['plex_token']}")
+    try:
+        plex = PlexServer(config["plex_url"], config["plex_token"])
+    except Exception as e:
+        print(f"❌ Error connecting to Plex: {e}")
+        return jsonify({"error": f"Failed to connect to Plex: {e}"}), 500
     library = plex.library.section(config["library_name"])
 
     time_map = {"1 week": 7, "2 weeks": 14, "1 month": 30, "all": 9999}
