@@ -78,6 +78,7 @@ def fetch_posters():
 
     config = load_config()
     try:
+        print(f"Connecting to Plex at: {plex_url} with token: {plex_token}")
         plex = PlexServer(config["plex_url"], config["plex_token"])
     except Exception as e:
         logging.error(f"Error connecting to Plex: {e}")
@@ -116,6 +117,7 @@ def search_movie():
     debug_log("Starting step: Searching for a movie in Plex")
 
     config = load_config()
+    print(f"Connecting to Plex at: {plex_url} with token: {plex_token}")
     plex = PlexServer(config["plex_url"], config["plex_token"])
     library = plex.library.section(config["library_name"])
     search_query = request.json.get("query", "").strip().lower()
@@ -142,6 +144,7 @@ def apply_changes():
     debug_log("Starting step: Applying poster updates")
 
     config = load_config()
+    print(f"Connecting to Plex at: {plex_url} with token: {plex_token}")
     plex = PlexServer(config["plex_url"], config["plex_token"])
     selected_movies = request.json.get("selected_movies", [])
     response_messages = []
